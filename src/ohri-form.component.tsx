@@ -64,6 +64,7 @@ interface OHRIFormProps {
    * Renamed to `encounterUUID`. To be removed in future iterations.
    */
   encounterUuid?: string;
+  handlePromptBeforeClosing?: () => void;
 }
 
 export interface FormSubmissionHandler {
@@ -83,6 +84,7 @@ const OHRIForm: React.FC<OHRIFormProps> = ({
   formSessionIntent,
   meta,
   encounterUuid,
+  handlePromptBeforeClosing,
 }) => {
   const [currentProvider, setCurrentProvider] = useState(null);
   const [location, setEncounterLocation] = useState(null);
@@ -242,7 +244,10 @@ const OHRIForm: React.FC<OHRIFormProps> = ({
         setSubmitting(false);
       }}>
       {props => (
-        <Form className={`cds--form no-padding ng-untouched ng-pristine ng-invalid ${styles.ohriForm}`} ref={ref}>
+        <Form
+          onChange={() => typeof handlePromptBeforeClosing === 'function' && handlePromptBeforeClosing()}
+          className={`cds--form no-padding ng-untouched ng-pristine ng-invalid ${styles.ohriForm}`}
+          ref={ref}>
           {isLoadingPatient || isLoadingFormJson ? (
             <LoadingIcon />
           ) : (
