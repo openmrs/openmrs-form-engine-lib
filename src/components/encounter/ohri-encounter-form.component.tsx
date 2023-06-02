@@ -28,7 +28,6 @@ import { scrollIntoView } from '../../utils/ohri-sidebar';
 import { useEncounter } from '../../hooks/useEncounter';
 import { useInitialValues } from '../../hooks/useInitialValues';
 import { useEncounterRole } from '../../hooks/useEncounterRole';
-
 interface OHRIEncounterFormProps {
   formJson: OHRIFormSchema;
   patient: any;
