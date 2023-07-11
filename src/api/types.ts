@@ -162,6 +162,8 @@ export interface OHRIFormQuestionOptions {
   };
   isDateTime?: { labelTrue: boolean; labelFalse: boolean };
   usePreviousValueDisabled?: boolean;
+  allowedFileTypes?: Array<string>;
+  allowMultiple?: boolean;
 }
 
 export type SessionMode = 'edit' | 'enter' | 'view';
@@ -181,7 +183,8 @@ export type RenderType =
   | 'encounter-location'
   | 'textarea'
   | 'toggle'
-  | 'fixed-value';
+  | 'fixed-value'
+  | 'file';
 
 export interface PostSubmissionAction {
   applyAction(formSession: {
