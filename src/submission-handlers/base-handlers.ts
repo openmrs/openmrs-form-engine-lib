@@ -20,25 +20,32 @@ export const ObsSubmissionHandler: SubmissionHandler = {
     if (field.questionOptions.rendering == 'toggle') {
       return constructObs(value, context, field);
     }
+    // existing field, update value
     if (field.value) {
       if (context.sessionMode == 'edit' && !value) {
         field.value.voided = true;
       } else if (!value) {
         field.value = undefined;
       } else {
-        if (field.questionOptions.rendering.startsWith('date')) {
+        if (field.questionOptions.rendering === 'datetime') {
           field.value.value = dayjs(value).format('YYYY-MM-DD HH:mm');
+        } else if (field.questionOptions.rendering === 'date') {
+          field.value.value = dayjs(value).format('YYYY-MM-DD');
         } else {
           field.value.value = value;
         }
         field.value.voided = false;
       }
-    } else {
-      if (field.questionOptions.rendering.startsWith('date')) {
+    }
+    // no existing field, need to build new obs object
+    else {
+      if (field.questionOptions.rendering === 'datetime') {
         field.value = constructObs(dayjs(value).format('YYYY-MM-DD HH:mm'), context, field);
-        return field.value;
+      } else if (field.questionOptions.rendering === 'date') {
+        field.value = constructObs(dayjs(value).format('YYYY-MM-DD'), context, field);
+      } else {
+        field.value = constructObs(value, context, field);
       }
-      field.value = constructObs(value, context, field);
     }
     return field.value;
   },
@@ -76,14 +83,17 @@ export const ObsSubmissionHandler: SubmissionHandler = {
           },
         );
       }
-      if (typeof obs.value == 'string' || typeof obs.value == 'number') {
-        if (field.questionOptions.rendering.startsWith('date')) {
-          const dateObject = parseToLocalDateTime(field.value.value);
-          field.value.value = dayjs(dateObject).format('YYYY-MM-DD HH:mm');
-          return dateObject;
-        }
-        return obs.value;
+
+      if (field.questionOptions.rendering === 'datetime') {
+        const dateObject = parseToLocalDateTime(obs.value);
+        field.value.value = dayjs(dateObject).format('YYYY-MM-DD HH:mm');
+        return field.value.value;
+      } else if (field.questionOptions.rendering === 'date') {
+        const dateObject = obs.value ? obs.value.split('T')[0] : null;
+        field.value.value = dayjs(dateObject).format('YYYY-MM-DD');
+        return field.value.value;
       }
+
       if (field.questionOptions.rendering == 'checkbox') {
         field.value = encounter.obs.filter(o => o.concept.uuid == field.questionOptions.concept);
         if (!field.value.length && field['groupId']) {
@@ -98,7 +108,12 @@ export const ObsSubmissionHandler: SubmissionHandler = {
       if (rendering == 'fixed-value') {
         return field['fixedValue'];
       }
-      return obs.value?.uuid;
+
+      if (typeof obs.value == 'string' || typeof obs.value == 'number') {
+        return obs.value;
+      } else {
+        return obs.value?.uuid;
+      }
     }
     return '';
   },

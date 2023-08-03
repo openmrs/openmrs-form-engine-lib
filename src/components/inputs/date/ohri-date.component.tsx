@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useField } from 'formik';
 import { DatePicker, DatePickerInput, TimePicker } from '@carbon/react';
+import { formatDate, toOmrsDateFormat } from '@openmrs/esm-framework';
 import { fieldRequiredErrCode, isEmpty } from '../../../validators/ohri-form-validator';
 import { getConceptNameAndUUID, isInlineView } from '../../../utils/ohri-form-helper';
 import { isTrue } from '../../../utils/boolean-utils';
@@ -10,8 +11,6 @@ import { OHRIFormContext } from '../../../ohri-form-context';
 import { OHRIFieldValueView } from '../../value/view/ohri-field-value-view.component';
 import { PreviousValueReview } from '../../previous-value-review/previous-value-review.component';
 import styles from './ohri-date.scss';
-
-const dateFormatter = new Intl.DateTimeFormat(window.navigator.language);
 
 const OHRIDate: React.FC<OHRIFormFieldProps> = ({ question, onChange, handler }) => {
   const [field, meta] = useField(question.id);
@@ -38,64 +37,13 @@ const OHRIDate: React.FC<OHRIFormFieldProps> = ({ question, onChange, handler })
   }, [encounterContext.sessionMode, question.readonly, question.inlineRendering, layoutType, workspaceLayout]);
 
   const onDateChange = ([date]) => {
-    const refinedDate = date instanceof Date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000) : date;
-    setFieldValue(question.id, refinedDate);
-    onChange(question.id, refinedDate, setErrors, setWarnings);
-    onTimeChange(false, true);
-    question.value = handler?.handleFieldSubmission(question, refinedDate, encounterContext);
+    setFieldValue(question.id, date);
+    onChange(question.id, date, setErrors, setWarnings);
+    question.value = handler?.handleFieldSubmission(question, date, encounterContext);
+    return;
   };
 
-  const onTimeChange = (event, useValue = false) => {
-    if (useValue) {
-      const prevValue =
-        encounterContext?.previousEncounter &&
-        handler?.getPreviousValue(question, encounterContext?.previousEncounter, fields);
-      setTime(dayjs(prevValue?.value).format('hh:mm'));
-    } else {
-      const time = event.target.value;
-      const currentDateTime = field.value;
-      const splitTime = time.split(':');
-      currentDateTime.setHours(splitTime[0] ?? '00', splitTime[1] ?? '00');
-      setFieldValue(question.id, currentDateTime);
-      onChange(question.id, currentDateTime, setErrors, setWarnings);
-      question.value = handler?.handleFieldSubmission(question, currentDateTime, encounterContext);
-      setTime(time);
-    }
-  };
-  const { placeholder, carbonDateformat } = useMemo(() => {
-    const formatObj = dateFormatter.formatToParts(new Date());
-    const placeholder = formatObj
-      .map(obj => {
-        switch (obj.type) {
-          case 'day':
-            return 'dd';
-          case 'month':
-            return 'mm';
-          case 'year':
-            return 'yyyy';
-          default:
-            return obj.value;
-        }
-      })
-      .join('');
-    const carbonDateformat = formatObj
-      .map(obj => {
-        switch (obj.type) {
-          case 'day':
-            return 'd';
-          case 'month':
-            return 'm';
-          case 'year':
-            return 'Y';
-          default:
-            return obj.value;
-        }
-      })
-      .join('');
-    return { placeholder: placeholder, carbonDateformat: carbonDateformat };
-  }, []);
-
-  useEffect(() => {
+/*  useEffect(() => {
     if (encounterContext?.previousEncounter && !isTrue(question.questionOptions.usePreviousValueDisabled)) {
       let prevValue = handler?.getPreviousValue(question, encounterContext?.previousEncounter, fields);
 
@@ -114,23 +62,13 @@ const OHRIDate: React.FC<OHRIFormFieldProps> = ({ question, onChange, handler })
         setPreviousValueForReview(prevValue);
       }
     }
-  }, [encounterContext?.previousEncounter]);
+  }, [encounterContext?.previousEncounter]);*/
 
   useEffect(() => {
     getConceptNameAndUUID(question.questionOptions.concept).then(conceptTooltip => {
       setConceptName(conceptTooltip);
     });
   }, [conceptName]);
-
-  useEffect(() => {
-    if (!time && field.value) {
-      if (field.value instanceof Date) {
-        const hours = field.value.getHours() < 10 ? `0${field.value.getHours()}` : `${field.value.getHours()}`;
-        const minutes = field.value.getMinutes() < 10 ? `0${field.value.getMinutes()}` : `${field.value.getMinutes()}`;
-        setTime([hours, minutes].join(':'));
-      }
-    }
-  }, [field.value, time]);
 
   return encounterContext.sessionMode == 'view' || isTrue(question.readonly) ? (
     <OHRIFieldValueView
@@ -151,50 +89,19 @@ const OHRIDate: React.FC<OHRIFormFieldProps> = ({ question, onChange, handler })
               className={`${styles.datePickerOverrides} ${isFieldRequiredError ? styles.errorLabel : ''} ${
                 question.disabled || isTrue(question.readonly) ? styles.disabled : ''
               }`}
-              dateFormat={carbonDateformat}>
+              dateFormat="YYYY-MM-DD">
               <DatePickerInput
                 id={question.id}
-                placeholder={placeholder}
                 labelText={question.label}
-                value={
-                  field.value instanceof Date ? field.value.toLocaleDateString(window.navigator.language) : field.value
-                }
-                // Added for testing purposes.
-                // Notes:
-                // Something strange is happening with the way events are propagated and handled by Carbon.
-                // When we manually trigger an onchange event using the 'fireEvent' lib, the handler below will
-                // be triggered as opposed to the former handler that only gets triggered at runtime.
-                onChange={e => onDateChange([dayjs(e.target.value, 'DD/MM/YYYY').toDate()])}
                 disabled={question.disabled}
                 invalid={!isFieldRequiredError && errors.length > 0}
                 invalidText={errors[0]?.message}
+                value={ field.value instanceof Date ? dayjs(field.value).format("YYYY-MM-DD") : field.value }
                 warn={warnings.length > 0}
                 warnText={warnings[0]?.message}
               />
             </DatePicker>
           </div>
-          {question?.questionOptions.rendering === 'datetime' ? (
-            <TimePicker
-              // This classname doesn't seem to exist
-              className={styles.timePicker}
-              id={question.id}
-              labelText="Time:"
-              placeholder="HH:MM"
-              pattern="(1[012]|[1-9]):[0-5][0-9])$"
-              type="time"
-              disabled={!field.value ? true : false}
-              value={
-                time
-                  ? time
-                  : field.value instanceof Date
-                  ? field.value.toLocaleDateString(window.navigator.language)
-                  : field.value
-              }
-              onChange={onTimeChange}
-            />
-          ) : (
-            ''
-          )}
           {previousValueForReview && (
             <div className={`${styles.formField}`}>
               <PreviousValueReview
