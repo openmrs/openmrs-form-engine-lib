@@ -148,6 +148,7 @@ export interface OHRIFormQuestionOptions {
   /**
    * maxLength and maxLength are used to validate text field length
    */
+  conceptMappings?: Array<Record<string, string>>;
   maxLength?: string;
   minLength?: string;
   showDate?: string;
@@ -168,6 +169,8 @@ export interface OHRIFormQuestionOptions {
 }
 
 export type SessionMode = 'edit' | 'enter' | 'view';
+
+export type conceptUUID = string;
 
 export type RenderType =
   | 'select'
@@ -258,4 +261,14 @@ export interface DataSource<T> {
    * Maps a data source item to an object with a uuid and display property
    */
   toUuidAndDisplay(item: T): OpenmrsResource;
+}
+
+export interface datatypeToRenderingMapInterface {
+  Numeric: Array<string>;
+  Coded: Array<string>;
+  Text: Array<string>;
+  Date: Array<string>;
+  Datetime: Array<string>;
+  Boolean: Array<string>;
+  Rule: Array<string>;
 }
