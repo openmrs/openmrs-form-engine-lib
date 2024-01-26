@@ -1,13 +1,13 @@
 .ohriForm {
   height: 100%;
-  overflow: hidden;
+  overflow-y: scroll;
   flex-grow: 1;
 }
 
 .ohriFormContainer {
   display: -webkit-flex;
   height: 100%;
-  overflow-y: hidden;
+  // overflow-y: hidden;
   flex-direction: column;
 }
 
@@ -22,10 +22,10 @@
   height: 1rem;
 }
 
-.ohriFormContainer :global(.cds--label) {
-  font-size: 0.875rem;
-  width: 18rem;
-}
+// .ohriFormContainer :global(.cds--label) {
+//   font-size: 0.875rem;
+//   width: 18rem;
+// }
 
 .formContent {
   height: calc(100vh - 6rem);
@@ -34,15 +34,15 @@
   flex-grow: 1;
   flex-shrink: 1;
   position: relative;
-  overflow-y: hidden;
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
 }
 
 .formContentBody {
-  overflow-y: auto;
+  overflow-y: scroll;
   width: inherit;
-  position: sticky;
+  // position: sticky;
 }
 
 .minifiedFormContentBody {

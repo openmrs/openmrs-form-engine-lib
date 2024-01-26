@@ -1,7 +1,8 @@
 @use '@carbon/colors';
 
 .textInputOverrides > div > div {
-  width: 22.313rem;
+  // width: 22.313rem;
+  width: 100%;
 }
 
 .errorLabel label {

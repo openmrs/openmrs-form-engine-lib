@@ -40,8 +40,10 @@ export const OHRIObsGroup: React.FC<ObsGroupProps> = ({ question, onChange, dele
         });
 
         return (
-          <div className={`${styles.flexColumn} ${styles.obsGroupColumn} `}>
-            <div className={styles.parent}>
+          // <div className={`${styles.flexColumn} ${styles.obsGroupColumn} `}>
+          //   <div className={styles.parent}>
+          <div>
+            <div>
               {questionFragment}
               <div className={isUnspecifiedSupported(field) ? styles.tooltipWithUnspecified : styles.tooltip}>
                 {isUnspecifiedSupported(field) && (

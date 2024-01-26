@@ -8,17 +8,17 @@
   color: colors.$gray-70;
 }
 
-.numberInputWrapper :global(.cds--number) {
-  @extend .formField;
-  width: 22.313rem;
-  font-size: 0.875rem;
-}
+// .numberInputWrapper :global(.cds--number) {
+//   @extend .formField;
+//   width: 22.313rem;
+//   font-size: 0.875rem;
+// }
 
-.row {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-}
+// .row {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: baseline;
+// }
 
 .errorLabel label {
   color: colors.$red-60;

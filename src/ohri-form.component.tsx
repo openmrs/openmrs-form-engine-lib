@@ -164,7 +164,7 @@ const OHRIForm: React.FC<OHRIFormProps> = ({
   useEffect(() => {
     reportError(patientError, t);
   }, [patientError, t]);
-
+  console.log("Local form engine running!!")
   const handleFormSubmit = (values: Record<string, any>) => {
     // validate the form and its subforms (when present)
     let isSubmittable = true;
@@ -311,10 +311,11 @@ const OHRIForm: React.FC<OHRIFormProps> = ({
                         <ReactMarkdown children={refinedFormJson.markdown.join('\n')} />
                       </div>
                     )}
-                    <div
+                    {/* <div
                       className={`${styles.formContentBody}
                     ${workspaceLayout === 'minimized' ? `${styles.minifiedFormContentBody}` : ''}
-                  `}>
+                  `}> */}
+                  <div>
                       <OHRIEncounterForm
                         formJson={refinedFormJson}
                         patient={patient}

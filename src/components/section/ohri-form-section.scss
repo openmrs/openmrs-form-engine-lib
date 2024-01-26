@@ -5,9 +5,9 @@
   margin-bottom: 3.063rem;
 }
 
-.parent{
-  width: 360px;
-}
+// .parent{
+//   width: 360px;
+// }
 
 .tooltipWithUnspecified{
   display: flex;
@@ -29,21 +29,21 @@
   margin-bottom: 0.5rem;
 }
 
-.sectionContainer {
-  margin-top: 1.438rem;
-  width: 90%;
-}
+// .sectionContainer {
+//   margin-top: 1.438rem;
+//   width: 90%;
+// }
 
 // This rule is breaking styling for embedded widgets
 // To should be more specific 
-.sectionContainer :global(.cds--fieldset) {
-  margin-bottom: 0;
-}
+// .sectionContainer :global(.cds--fieldset) {
+//   margin-bottom: 0;
+// }
 
-.sectionContainer > div {
-  margin-bottom: 1rem;
-}
+// .sectionContainer > div {
+//   margin-bottom: 1rem;
+// }
 
-.sectionContainer :global(.cds--label) {
-  text-align: left;
-}
+// .sectionContainer :global(.cds--label) {
+//   text-align: left;
+// }

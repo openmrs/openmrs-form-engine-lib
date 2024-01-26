@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useField } from 'formik';
 import { ErrorBoundary } from 'react-error-boundary';
-import { ToastNotification } from '@carbon/react';
+import { ToastNotification, Grid, Column, Row } from '@carbon/react';
 import { getRegisteredFieldSubmissionHandler } from '../../registry/registry';
 import { OHRIUnspecified } from '../inputs/unspecified/ohri-unspecified.component';
 import { OHRIFormField, OHRIFormFieldProps, SubmissionHandler } from '../../api/types';
@@ -33,40 +33,44 @@ const OHRIFormSection = ({ fields, onFieldChange }) => {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => {}}>
-      <div className={styles.sectionContainer}>
-        {fieldComponentMapEntries
-          .filter((entry) => entry?.fieldComponent)
-          .map((entry, index) => {
-            const { fieldComponent: FieldComponent, fieldDescriptor, handler } = entry;
-            if (FieldComponent) {
-              const qnFragment = (
-                <FieldComponent
-                  question={fieldDescriptor}
-                  onChange={onFieldChange}
-                  key={index}
-                  handler={handler}
-                  useField={useField}
-                />
-              );
+      <Grid>
+        {/* <div className={styles.sectionContainer}> */}
+        <Column lg={8} md={8} sm={12} xs={12}>
+          {fieldComponentMapEntries
+            .filter((entry) => entry?.fieldComponent)
+            .map((entry, index) => {
+              const { fieldComponent: FieldComponent, fieldDescriptor, handler } = entry;
+              if (FieldComponent) {
+                const qnFragment = (
+                  <FieldComponent
+                    question={fieldDescriptor}
+                    onChange={onFieldChange}
+                    key={index}
+                    handler={handler}
+                    useField={useField}
+                  />
+                );
 
-              return (
-                <div key={index} className={styles.parent}>
-                  {qnFragment}
-                  <div
-                    className={
-                      isUnspecifiedSupported(fieldDescriptor) ? styles.tooltipWithUnspecified : styles.tooltip
-                    }>
-                    {isUnspecifiedSupported(fieldDescriptor) &&
-                      fieldDescriptor.questionOptions.rendering != 'group' && (
-                        <OHRIUnspecified question={fieldDescriptor} onChange={onFieldChange} handler={handler} />
-                      )}
-                    {fieldDescriptor.questionInfo && <OHRITooltip field={fieldDescriptor} />}
-                  </div>
-                </div>
-              );
-            }
-          })}
-      </div>
+                return (
+                  // <div key={index} className={styles.parent}>
+                  <Row key={index}>
+                    {qnFragment}
+                    <div
+                      className={
+                        isUnspecifiedSupported(fieldDescriptor) ? styles.tooltipWithUnspecified : styles.tooltip
+                      }>
+                      {isUnspecifiedSupported(fieldDescriptor) &&
+                        fieldDescriptor.questionOptions.rendering != 'group' && (
+                          <OHRIUnspecified question={fieldDescriptor} onChange={onFieldChange} handler={handler} />
+                        )}
+                      {fieldDescriptor.questionInfo && <OHRITooltip field={fieldDescriptor} />}
+                    </div>
+                  </Row>
+                );
+              }
+            })}
+        </Column>
+      </Grid>
     </ErrorBoundary>
   );
 };

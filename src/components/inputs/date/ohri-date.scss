@@ -1,13 +1,13 @@
 @use '@carbon/colors';
 
-.datetime > div {
-  flex: none !important;
-  box-sizing: content-box !important;
-}
+// .datetime > div {
+//   flex: none !important;
+//   box-sizing: content-box !important;
+// }
 
-.datePickerOverrides input {
-  width: 22.313rem !important;
-}
+// .datePickerOverrides input {
+//   width: 22.313rem !important;
+// }
 
 .disabled label {
   color: colors.$gray-70 !important;
@@ -30,8 +30,8 @@
   padding-left: 0.2rem;
 }
 
-.row {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-}
+// .row {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: baseline;
+// }

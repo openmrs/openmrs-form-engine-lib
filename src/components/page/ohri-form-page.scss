@@ -53,8 +53,10 @@
 .formSection > div div div input,
 .formSection > div div div textarea,
 .formSection > div div div dropdown,
+.formSection > div div div datetime,
 .formSection :global(.cds--dropdown) button {
   background-color: white !important;
+  width: 100%;
 }
 
 @media (min-width: 640px) {

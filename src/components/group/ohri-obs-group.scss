@@ -5,34 +5,34 @@
   flex: 1;
 }
 
-.flexRow {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-}
+// .flexRow {
+//   display: flex;
+//   flex-direction: row;
+//   flex-wrap: wrap;
+//   width: 100%;
+// }
 
-.obsGroupColumn {
-  max-width: 18rem;
-}
+// .obsGroupColumn {
+//   max-width: 18rem;
+// }
 
-.obsGroupColumn > div, .obsGroupColumn div[class*="cds--number"] {
-  margin-top: 0 !important;
-}
+// .obsGroupColumn > div, .obsGroupColumn div[class*="cds--number"] {
+//   margin-top: 0 !important;
+// }
 
 /** Targets carbon's multiselect */
-.obsGroupColumn > div > div > div {
-  max-width: 18rem !important;
-}
+// .obsGroupColumn > div > div > div {
+//   max-width: 18rem !important;
+// }
 
-/** Targets carbon's dropdown */
-.obsGroupColumn > div > div > div > div {
-  max-width: 18rem !important;
-}
+// /** Targets carbon's dropdown */
+// .obsGroupColumn > div > div > div > div {
+//   max-width: 18rem !important;
+// }
 
-.parent{
-  width: 360px;
-}
+// .parent{
+//   width: 360px;
+// }
 
 .tooltipWithUnspecified{
   display: flex;
