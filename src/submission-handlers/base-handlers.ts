@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { getConcept, getAttachmentByUuid } from '../api/api';
 import { ConceptTrue } from '../constants';
 import { EncounterContext } from '../ohri-form-context';
-import { OHRIFormField, OpenmrsEncounter, OpenmrsObs, SubmissionHandler } from '../api/types';
+import { OHRIFormField, OpenmrsEncounter, OpenmrsObs, Order, SubmissionHandler } from '../api/types';
 import { parseToLocalDateTime } from '../utils/ohri-form-helper';
 import { flattenObsList, hasRendering } from '../utils/common-utils';
 import { formatDate } from '@openmrs/esm-framework';

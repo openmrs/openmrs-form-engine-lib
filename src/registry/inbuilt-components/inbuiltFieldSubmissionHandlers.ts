@@ -1,6 +1,7 @@
 import { SubmissionHandler } from '../../api/types';
 import { ObsSubmissionHandler, EncounterLocationSubmissionHandler } from '../../submission-handlers/base-handlers';
 import { EncounterDatetimeHandler } from '../../submission-handlers/encounterDatetimeHandler';
+import { OrderSubmissionHandler } from '../../submission-handlers/orderHandler';
 import { RegistryItem } from '../registry';
 
 /**
@@ -11,6 +12,11 @@ export const inbuiltFieldSubmissionHandlers: Array<RegistryItem<SubmissionHandle
     name: 'ObsSubmissionHandler',
     component: ObsSubmissionHandler,
     type: 'obs',
+  },
+  {
+    name: 'OrderSubmissionHandler',
+    component: OrderSubmissionHandler,
+    type: 'orders',
   },
   {
     name: 'ObsGroupHandler',
