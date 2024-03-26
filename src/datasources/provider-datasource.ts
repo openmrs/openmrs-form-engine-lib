@@ -1,9 +1,9 @@
 import { openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { BaseOpenMRSDataSource } from './data-source';
 
-export class LocationDataSource extends BaseOpenMRSDataSource {
+export class ProviderDataSource extends BaseOpenMRSDataSource {
   constructor() {
-    super(`${restBaseUrl}location?v=custom:(uuid,display)`);
+    super(`${restBaseUrl}/provider?v=custom:(uuid,display)`);
   }
 
   fetchData(searchTerm: string, config?: Record<string, any>, uuid?: string): Promise<any[]> {

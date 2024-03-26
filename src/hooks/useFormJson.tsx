@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { OHRIFormSchema, OHRIFormSection, ReferencedForm } from '../api/types';
+import { OHRIFormField, OHRIFormSchema, OHRIFormSection, ReferencedForm } from '../api/types';
 import { isTrue } from '../utils/boolean-utils';
 import { applyFormIntent } from '../utils/forms-loader';
 import { fetchOpenMRSForm, fetchClobData } from '../api/api';
+import { transformSchema } from '../transformers/form-schema-transformer';
 
 export function useFormJson(formUuid: string, rawFormJson: any, encounterUuid: string, formSessionIntent: string) {
   const [formJson, setFormJson] = useState<OHRIFormSchema>(null);
@@ -55,6 +56,9 @@ export async function loadFormJson(
   const resolvedFormComponents = await loadFormComponents(formComponentsRefs);
   const formComponents = mapFormComponents(resolvedFormComponents);
   updateFormJsonWithComponents(formJson, formComponents);
+
+  //Make schema transformations if any
+  await transformSchema(formJson);
 
   return refineFormJson(formJson, formSessionIntent);
 }

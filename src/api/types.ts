@@ -199,6 +199,7 @@ export type RenderType =
   | 'group'
   | 'content-switcher'
   | 'encounter-location'
+  | 'encounter-provider'
   | 'textarea'
   | 'toggle'
   | 'fixed-value'
@@ -331,4 +332,11 @@ export interface ProgramEnrollmentPayload {
   dateEnrolled: string;
   dateCompleted?: string;
   location: string;
+}
+
+/**
+ * Defines logic that transforms the form schema
+ */
+export interface FormSchemaTransformer {
+  transform: (form: OHRIFormSchema) => void;
 }
