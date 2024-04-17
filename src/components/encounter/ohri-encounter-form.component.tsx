@@ -23,7 +23,7 @@ import { isEmpty, isEmpty as isValueEmpty, OHRIFieldValidator } from '../../vali
 import { InstantEffect } from '../../utils/instant-effect';
 import { FormSubmissionHandler } from '../../ohri-form.component';
 import { evaluateAsyncExpression, evaluateExpression } from '../../utils/expression-runner';
-import { getPreviousEncounter, saveAttachment, saveEncounter } from '../../api/api';
+import { getPreviousEncounter, saveAttachment, saveEncounter, saveOrder } from '../../api/api';
 import { isTrue } from '../../utils/boolean-utils';
 import { scrollIntoView } from '../../utils/ohri-sidebar';
 import { useEncounter } from '../../hooks/useEncounter';
@@ -84,6 +84,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
   const [encounterLocation, setEncounterLocation] = useState(null);
   const [encounterDate, setEncounterDate] = useState(formSessionDate);
   const [encounterProvider, setEncounterProvider] = useState(provider);
+  const [orders, setOrders] = useState([]);
   const { encounter, isLoading: isLoadingEncounter } = useEncounter(formJson);
   const [previousEncounter, setPreviousEncounter] = useState<OpenmrsEncounter>(null);
   const [isLoadingPreviousEncounter, setIsLoadingPreviousEncounter] = useState(true);
@@ -107,9 +108,11 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
       encounterProvider: provider,
       form: form,
       visit: visit,
+      orders,
       setEncounterDate,
       setEncounterProvider,
       setEncounterLocation,
+      setOrders,
       initValues: initValues,
       obsGroupCounter: obsGroupCounter,
       setObsGroupCounter: setObsGroupCounter,
@@ -469,10 +472,13 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
                 obsGroup.groupMembers.push(groupedField.value);
               }
             }
+            console.log('===groupedField', groupedField)
           });
           hasValue && addObs(obsForSubmission, obsGroup);
+          console.log('===obsForSubmission ppp', obsForSubmission)
         } else {
           addObs(obsForSubmission, field.value);
+          console.log('===obsForSubmission', obsForSubmission)
         }
       });
 
@@ -480,6 +486,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
     obsGroupsToVoid.forEach((obs) => addObs(obsForSubmission, obs));
     let encounterForSubmission: OpenmrsEncounter = {};
     if (encounter) {
+      console.log("jj")
       Object.assign(encounterForSubmission, encounter);
       encounterForSubmission['location'] = encounterLocation.uuid;
       // update encounter providers
@@ -494,6 +501,9 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
             provider: encounterProvider,
             encounterRole: encounterRole?.uuid,
           },
+        ];
+        encounterForSubmission['orders'] =  [
+          ...encounterForSubmission.orders
         ];
         (encounterForSubmission['form'] = {
           uuid: encounterContext?.form?.uuid,
@@ -525,6 +535,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
 
     if (encounterForSubmission.obs?.length || encounterForSubmission.orders?.length) {
       const ac = new AbortController();
+      console.log("===encounterForSubmission save", encounterForSubmission)
       return saveEncounter(ac, encounterForSubmission, encounter?.uuid).then((response) => {
         const encounter = response.data;
         const fileFields = fields?.filter((field) => field?.questionOptions.rendering === 'file');
@@ -538,7 +549,14 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
             ac,
           );
         });
-        return Promise.all(saveAttachmentPromises).then(() => response);
+        return Promise.all(saveAttachmentPromises).then(() => {
+          console.log("===my orders", encounterContext.orders)
+          if(encounterContext?.orders?.length > 0) {
+            console.log("===encounter response", response?.data)
+            return saveOrder(ac, encounterContext?.orders, response?.data)
+          }
+          return response;
+        });
       });
     }
   };

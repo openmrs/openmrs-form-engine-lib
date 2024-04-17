@@ -18,7 +18,7 @@ export function useInitialValues(
   const [isEncounterBindingComplete, setIsEncounterBindingComplete] = useState(
     encounterContext.sessionMode === 'enter',
   );
-  const encounterContextInitializableTypes = ['encounterProvider', 'encounterDatetime', 'encounterLocation'];
+  const encounterContextInitializableTypes = ['encounterProvider', 'encounterDatetime', 'encounterLocation', 'orders'];
 
   useEffect(() => {
     const asyncItemsKeys = Object.keys(asyncInitValues ?? {});

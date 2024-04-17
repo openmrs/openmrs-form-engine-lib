@@ -24,10 +24,12 @@ export interface EncounterContext {
   location: any;
   sessionMode: SessionMode;
   encounterDate: Date;
+  orders: Array<OpenmrsEncounter>;
   setEncounterDate(value: Date): void;
   encounterProvider: string;
   setEncounterProvider(value: string): void;
   setEncounterLocation(value: any): void;
+  setOrders(value: any): void
   initValues?: Record<string, any>;
   setObsGroupCounter?: any;
 }

@@ -2,7 +2,7 @@ import { openmrsFetch, openmrsObservableFetch } from '@openmrs/esm-framework';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { encounterRepresentation } from '../constants';
-import { OpenmrsForm, ProgramEnrollmentPayload } from './types';
+import { OpenmrsForm, ProgramEnrollmentPayload, Order } from './types';
 import { isUuid } from '../utils/boolean-utils';
 
 const BASE_WS_API_URL = '/ws/rest/v1/';
@@ -204,5 +204,31 @@ export function updateProgramEnrollment(
     },
     body: { dateEnrolled, dateCompleted, location },
     signal: abortController.signal,
+  });
+}
+
+// save orders
+export function saveOrder(abortController: AbortController, payload: Array<Order>, encounter: any, orderUuid?: string) {
+  const url = orderUuid ? `/ws/rest/v1/order/${orderUuid}?v=full` : `/ws/rest/v1/order`;
+
+  console.log('==order', payload);
+  const newPayload = payload.map((order) => ({
+    ...order,
+    encounter: encounter?.uuid,
+    orderer: encounter?.encounterProviders?.[0].provider,
+  }));
+
+  console.log('===encounter order', encounter);
+  console.log('===encounter order payload', newPayload);
+
+  newPayload.map((order) => {
+    return openmrsFetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: order,
+      signal: abortController.signal,
+    });
   });
 }

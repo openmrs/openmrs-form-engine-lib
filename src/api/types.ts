@@ -182,6 +182,9 @@ export interface OHRIFormQuestionOptions {
   allowMultiple?: boolean;
   datasource?: { name: string; config?: Record<string, any> };
   isSearchable?: boolean;
+  routine?: string;
+  orderType?: string;
+  careSetting?: string;
 }
 
 export type SessionMode = 'edit' | 'enter' | 'view' | 'embedded-view';
@@ -203,7 +206,8 @@ export type RenderType =
   | 'textarea'
   | 'toggle'
   | 'fixed-value'
-  | 'file';
+  | 'file'
+  | 'orders';
 
 export interface PostSubmissionAction {
   applyAction(
@@ -344,4 +348,19 @@ export interface FormSchemaTransformer {
    * Transforms the raw schema to be compatible with the React Form Engine.
    */
   transform: (form: OHRIFormSchema) => OHRIFormSchema;
+}
+
+export interface Order {
+  uuid(uuid: any): unknown;
+  formFieldPath: string;
+  type: string;
+  action: string;
+  urgency: string;
+  dateActivated: string;
+  careSetting: string;
+  groupMembers: Order[];
+  encounter: string;
+  patient: string;
+  concept: string;
+  orderer: string;
 }
