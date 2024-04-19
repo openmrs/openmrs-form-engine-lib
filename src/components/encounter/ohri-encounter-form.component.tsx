@@ -139,7 +139,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
             question['fixedValue'] = question.value;
           }
           flattenedFieldsTemp.push(question);
-          if (question.type == 'obsGroup') {
+          if (question.type == 'obsGroup' || question?.type == 'ordersGroup') {
             question.questions.forEach((groupedField) => {
               if (groupedField.questionOptions.rendering == 'fixed-value' && !groupedField['fixedValue']) {
                 groupedField['fixedValue'] = groupedField.value;
@@ -472,13 +472,10 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
                 obsGroup.groupMembers.push(groupedField.value);
               }
             }
-            console.log('===groupedField', groupedField)
           });
           hasValue && addObs(obsForSubmission, obsGroup);
-          console.log('===obsForSubmission ppp', obsForSubmission)
         } else {
           addObs(obsForSubmission, field.value);
-          console.log('===obsForSubmission', obsForSubmission)
         }
       });
 
@@ -486,7 +483,6 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
     obsGroupsToVoid.forEach((obs) => addObs(obsForSubmission, obs));
     let encounterForSubmission: OpenmrsEncounter = {};
     if (encounter) {
-      console.log("jj")
       Object.assign(encounterForSubmission, encounter);
       encounterForSubmission['location'] = encounterLocation.uuid;
       // update encounter providers
@@ -533,6 +529,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
       };
     }
 
+    console.log('===encounterForSubmission', encounterForSubmission)
     if (encounterForSubmission.obs?.length || encounterForSubmission.orders?.length) {
       const ac = new AbortController();
       console.log("===encounterForSubmission save", encounterForSubmission)
@@ -550,9 +547,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
           );
         });
         return Promise.all(saveAttachmentPromises).then(() => {
-          console.log("===my orders", encounterContext.orders)
           if(encounterContext?.orders?.length > 0) {
-            console.log("===encounter response", response?.data)
             return saveOrder(ac, encounterContext?.orders, response?.data)
           }
           return response;
@@ -568,6 +563,7 @@ export const OHRIEncounterForm: React.FC<OHRIEncounterFormProps> = ({
     setWarnings: (warnings: Array<ValidationResult>) => void,
     isUnspecified: boolean,
   ) => {
+
     const field = fields.find((field) => field.id == fieldName);
     const validators = Array.isArray(field.validators)
       ? [{ type: 'default' }, ...field.validators]

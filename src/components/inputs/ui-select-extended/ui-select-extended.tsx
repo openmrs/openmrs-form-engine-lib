@@ -31,6 +31,10 @@ const UISelectExtended: React.FC<OHRIFormFieldProps> = ({ question, handler, onC
   const [config, setConfig] = useState({});
   const [savedSearchableItem, setSavedSearchableItem] = useState({});
 
+  console.log("===field.value", field.value)
+  console.log("==items", items)
+  console.log("===p", items ? items.find((item) => item.uuid == field.value) : '')
+
   interface DisplayableItem {
     uuid: string;
     display: string;
@@ -43,16 +47,19 @@ const UISelectExtended: React.FC<OHRIFormFieldProps> = ({ question, handler, onC
     return false;
   }, [encounterContext.sessionMode, question.readonly, question.inlineRendering, layoutType, workspaceLayout]);
 
+  console.log("===question", question)
   useEffect(() => {
     const datasourceName = question.questionOptions?.datasource?.name;
+    console.log("===datasourceName", datasourceName)
     setConfig(
       datasourceName
         ? question.questionOptions.datasource?.config
         : getControlTemplate(question.questionOptions.rendering)?.datasource?.config,
     );
-    getRegisteredDataSource(datasourceName ? datasourceName : question.questionOptions.rendering).then((ds) =>
-      setDataSource(ds),
-    );
+    getRegisteredDataSource(datasourceName ? datasourceName : question.questionOptions.rendering).then((ds) => {
+      console.log("===ds", ds);
+      setDataSource(ds);
+    });
   }, [question.questionOptions?.datasource]);
 
   useEffect(() => {
@@ -99,10 +106,18 @@ const UISelectExtended: React.FC<OHRIFormFieldProps> = ({ question, handler, onC
     // If not searchable, preload the items
     if (dataSource && !isTrue(question.questionOptions.isSearchable)) {
       setIsLoading(true);
-      dataSource.fetchData(null, config).then((dataItems) => {
-        setItems(dataItems.map(dataSource.toUuidAndDisplay));
-        setIsLoading(false);
-      });
+      if(field?.value != '') {
+        dataSource.fetchData(field.value, config).then((dataItems) => {
+          setItems(dataItems.map(dataSource.toUuidAndDisplay));
+          setIsLoading(false);
+        });
+      } else {
+        dataSource.fetchData(null, config).then((dataItems) => {
+          setItems(dataItems.map(dataSource.toUuidAndDisplay));
+          setIsLoading(false);
+        });
+      }
+     
     }
   }, [dataSource, config]);
 

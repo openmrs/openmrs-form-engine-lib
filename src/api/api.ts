@@ -211,15 +211,11 @@ export function updateProgramEnrollment(
 export function saveOrder(abortController: AbortController, payload: Array<Order>, encounter: any, orderUuid?: string) {
   const url = orderUuid ? `/ws/rest/v1/order/${orderUuid}?v=full` : `/ws/rest/v1/order`;
 
-  console.log('==order', payload);
   const newPayload = payload.map((order) => ({
     ...order,
     encounter: encounter?.uuid,
     orderer: encounter?.encounterProviders?.[0].provider,
   }));
-
-  console.log('===encounter order', encounter);
-  console.log('===encounter order payload', newPayload);
 
   newPayload.map((order) => {
     return openmrsFetch(url, {

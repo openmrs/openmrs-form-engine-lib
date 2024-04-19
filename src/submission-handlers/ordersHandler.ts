@@ -25,7 +25,14 @@ export const OrdersHandler: SubmissionHandler = {
     context: EncounterContext,
   ) => {
     if (encounter) {
-      return encounter.orders[0]?.uuid;
+      const rendering = field.questionOptions.rendering;
+      if (rendering == 'ui-select-extended') {
+        if(field?.questionOptions) {
+          console.log("===field?.questionOptions.concept", field?.questionOptions.concept)
+          return field?.questionOptions.concept;
+        }
+      }
+      return;
     } else {
       return;
     }
@@ -36,6 +43,7 @@ export const OrdersHandler: SubmissionHandler = {
   },
 
   getPreviousValue: (field: OHRIFormField, encounter: OpenmrsEncounter, allFormFields: Array<OHRIFormField>) => {
+    console.log("===previous order", encounter?.orders)
     const order = encounter?.orders?.[0];
     return order ? { value: order.uuid, display: order.display} : null;
   },

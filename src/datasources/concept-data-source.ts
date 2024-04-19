@@ -21,7 +21,6 @@ export class ConceptDataSource extends BaseOpenMRSDataSource {
       }
     }
     return openmrsFetch(searchTerm ? `${apiUrl}&q=${searchTerm}` : apiUrl).then(({ data }) => {
-      console.log("=== drug data", data)
       return data.results;
     });
   }
