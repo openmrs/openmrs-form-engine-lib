@@ -207,6 +207,10 @@ export interface FormQuestionOptions {
   minLength?: string;
   showDate?: string;
   answers?: Array<QuestionAnswerOption>;
+  shownDateOptions?: {
+    validators?: Array<Record<string, any>>;
+  };
+  answers?: Array<Record<any, any>>;
   weeksList?: string;
   locationTag?: string;
   rows?: number;
