@@ -12,6 +12,8 @@ import { fieldRequiredErrCode, isEmpty } from '../../../validators/form-validato
 import { FormContext } from '../../../form-context';
 import FieldValueView from '../../value/view/field-value-view.component';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
+import InlineDate from '../inline-date/inline-date.component';
+
 import styles from './date.scss';
 
 const locale = window.i18next.language == 'en' ? 'en-GB' : window.i18next.language;
@@ -212,6 +214,11 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
             ''
           )}
         </div>
+        {question.questionOptions.showDate && (
+          <div style={{ marginTop: '5px' }}>
+            <InlineDate question={question} onChange={() => {}} handler={undefined} />
+          </div>
+        )}
       </>
     )
   );

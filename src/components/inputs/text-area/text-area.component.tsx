@@ -10,6 +10,8 @@ import { FormContext } from '../../../form-context';
 import { type FormFieldProps } from '../../../types';
 import FieldValueView from '../../value/view/field-value-view.component';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
+import InlineDate from '../inline-date/inline-date.component';
+
 import styles from './text-area.scss';
 
 const TextArea: React.FC<FormFieldProps> = ({ question, onChange, handler, previousValue: previousValueProp }) => {
@@ -85,7 +87,13 @@ const TextArea: React.FC<FormFieldProps> = ({ question, onChange, handler, previ
             warn={warnings.length > 0}
             warnText={warnings.length && warnings[0].message}
           />
+          {question.questionOptions.showDate && (
+          <div style={{ marginTop: '5px' }}>
+          <InlineDate question={question} onChange={() => {}} handler={undefined} />
+        </div>
+  )}
         </Layer>
+
       </div>
     )
   );

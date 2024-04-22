@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layer, NumberInput } from '@carbon/react';
 import classNames from 'classnames';
 import { useField } from 'formik';
@@ -9,8 +10,9 @@ import FieldValueView from '../../value/view/field-value-view.component';
 import { type FormFieldProps } from '../../../types';
 import { FormContext } from '../../../form-context';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
+import InlineDate from '../inline-date/inline-date.component';
+
 import styles from './number.scss';
-import { useTranslation } from 'react-i18next';
 
 const NumberField: React.FC<FormFieldProps> = ({ question, onChange, handler, previousValue }) => {
   const [field, meta] = useField(question.id);
@@ -93,6 +95,11 @@ const NumberField: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
         warnText={warnings[0]?.message}
         step={0.01}
       />
+      {question.questionOptions.showDate && (
+      <div style={{ marginTop: '5px' }}>
+      <InlineDate question={question} onChange={() => {}} handler={undefined} />
+    </div>
+  )}
     </Layer>
   );
 };
