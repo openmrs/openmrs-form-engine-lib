@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Dropdown as DropdownInput, Layer } from '@carbon/react';
@@ -36,12 +37,12 @@ const Dropdown: React.FC<FormFieldProps> = ({ question, onChange, handler, previ
     setFieldValue(question.id, value);
     onChange(question.id, value, setErrors, setWarnings);
     question.value =
-        obsDate === undefined
-          ? handler?.handleFieldSubmission(question, value, encounterContext)
-          : handler?.handleFieldSubmission(question, value, {
-              ...encounterContext,
-              encounterDate: obsDate !== undefined ? obsDate : undefined,
-            });
+      obsDate === undefined
+        ? handler?.handleFieldSubmission(question, value?.name, encounterContext)
+        : handler?.handleFieldSubmission(question, value?.name, {
+            ...encounterContext,
+            encounterDate: obsDate !== undefined ? obsDate : undefined,
+          });
   };
 
   useEffect(() => {

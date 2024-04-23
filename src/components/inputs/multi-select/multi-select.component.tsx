@@ -11,6 +11,9 @@ import { isInlineView } from '../../../utils/form-helper';
 import { isTrue } from '../../../utils/boolean-utils';
 import FieldValueView from '../../value/view/field-value-view.component';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
+import InlineDate from '../inline-date/inline-date.component';
+import { ObsSubmissionHandler } from '../../../submission-handlers/base-handlers';
+
 import styles from './multi-select.scss';
 
 const MultiSelect: React.FC<FormFieldProps> = ({ question, onChange, handler, previousValue }) => {
@@ -22,6 +25,7 @@ const MultiSelect: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
   const [warnings, setWarnings] = useState([]);
   const [counter, setCounter] = useState(0);
   const isFieldRequiredError = useMemo(() => errors[0]?.errCode == fieldRequiredErrCode, [errors]);
+  const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
     if (question['submission']) {
@@ -54,17 +58,27 @@ const MultiSelect: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
     });
     setFieldValue(question.id, value);
     onChange(question.id, value, setErrors, setWarnings);
-    question.value = handler?.handleFieldSubmission(question, value, encounterContext);
+    question.value =
+      obsDate === undefined
+        ? handler?.handleFieldSubmission(question, value, encounterContext)
+        : handler?.handleFieldSubmission(question, value, {
+            ...encounterContext,
+            encounterDate: obsDate !== undefined ? obsDate : undefined,
+          });
   };
 
   useEffect(() => {
-    if (!isEmpty(previousValue)) {
-      const previousValues = Array.isArray(previousValue)
-        ? previousValue.map((item) => item.value)
-        : [previousValue.value];
-      setFieldValue(question.id, previousValues);
-      onChange(question.id, previousValues, setErrors, setWarnings);
-      question.value = handler?.handleFieldSubmission(question, previousValues, encounterContext);
+    if (!isEmpty(previousValue) && Array.isArray(previousValue)) {
+      const valuesToSet = previousValue.map((eachItem) => eachItem.value);
+      setFieldValue(question.id, valuesToSet);
+      onChange(question.id, valuesToSet, setErrors, setWarnings);
+      question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, valuesToSet, encounterContext)
+          : handler?.handleFieldSubmission(question, valuesToSet, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
     }
   }, [previousValue]);
 
@@ -123,6 +137,18 @@ const MultiSelect: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
             <ValueEmpty />
           )}
         </div>
+        {question.questionOptions.showDate === 'true' ? (
+          <div style={{ marginTop: '5px' }}>
+            <InlineDate
+              question={question}
+              setObsDateTime={(value) => setObsDate(value)}
+              onChange={() => {}}
+              handler={ObsSubmissionHandler}
+            />
+          </div>
+        ) : (
+          ''
+        )}
       </>
     )
   );
