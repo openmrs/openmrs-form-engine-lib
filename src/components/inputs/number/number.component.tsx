@@ -11,6 +11,7 @@ import { type FormFieldProps } from '../../../types';
 import { FormContext } from '../../../form-context';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
 import InlineDate from '../inline-date/inline-date.component';
+import { ObsSubmissionHandler } from '../../../submission-handlers/base-handlers';
 
 import styles from './number.scss';
 
@@ -21,6 +22,7 @@ const NumberField: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
   const isFieldRequiredError = useMemo(() => errors[0]?.errCode == fieldRequiredErrCode, [errors]);
   const [warnings, setWarnings] = useState([]);
   const { t } = useTranslation();
+  const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
     if (question['submission']) {
@@ -40,7 +42,13 @@ const NumberField: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
     }
     if (previousValue !== field.value) {
       onChange(question.id, field.value, setErrors, setWarnings);
-      question.value = handler?.handleFieldSubmission(question, field.value, encounterContext);
+      question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, field?.value, encounterContext)
+          : handler?.handleFieldSubmission(question, field?.value, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
     }
   };
 
@@ -95,11 +103,19 @@ const NumberField: React.FC<FormFieldProps> = ({ question, onChange, handler, pr
         warnText={warnings[0]?.message}
         step={0.01}
       />
-      {question.questionOptions.showDate && (
-      <div style={{ marginTop: '5px' }}>
-      <InlineDate question={question} onChange={() => {}} handler={undefined} />
-    </div>
-  )}
+
+      {question.questionOptions.showDate === 'true' ? (
+        <div style={{ marginTop: '5px' }}>
+          <InlineDate
+            question={question}
+            setObsDateTime={(value) => setObsDate(value)}
+            onChange={() => {}}
+            handler={ObsSubmissionHandler}
+          />
+        </div>
+      ) : (
+        ''
+      )}
     </Layer>
   );
 };

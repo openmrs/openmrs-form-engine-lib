@@ -10,6 +10,7 @@ import { FormContext } from '../../../form-context';
 import { type FormFieldProps } from '../../../types';
 import FieldValueView from '../../value/view/field-value-view.component';
 import InlineDate from '../inline-date/inline-date.component';
+import { ObsSubmissionHandler } from '../../../submission-handlers/base-handlers';
 
 import styles from './content-switcher.scss';
 
@@ -18,6 +19,8 @@ const ContentSwitcher: React.FC<FormFieldProps> = ({ question, onChange, handler
   const [field, meta] = useField(question.id);
   const { setFieldValue, encounterContext, layoutType, workspaceLayout } = React.useContext(FormContext);
   const [errors, setErrors] = useState([]);
+  const [conceptName, setConceptName] = useState('Loading...');
+  const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
     if (question['submission']?.errors) {
@@ -30,14 +33,26 @@ const ContentSwitcher: React.FC<FormFieldProps> = ({ question, onChange, handler
       const { value } = previousValue;
       setFieldValue(question.id, value);
       onChange(question.id, value, setErrors, null);
-      question.value = handler?.handleFieldSubmission(question, value, encounterContext);
+      question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, value, encounterContext)
+          : handler?.handleFieldSubmission(question, value, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
     }
   }, [previousValue]);
 
   const handleChange = (value) => {
     setFieldValue(question.id, value?.name);
     onChange(question.id, value?.name, setErrors, null);
-    question.value = handler?.handleFieldSubmission(question, value?.name, encounterContext);
+    question.value =
+      obsDate === undefined
+        ? handler?.handleFieldSubmission(question, value, encounterContext)
+        : handler?.handleFieldSubmission(question, value, {
+            ...encounterContext,
+            encounterDate: obsDate !== undefined ? obsDate : undefined,
+          });
   };
 
   const selectedIndex = useMemo(
@@ -85,10 +100,18 @@ const ContentSwitcher: React.FC<FormFieldProps> = ({ question, onChange, handler
             />
           ))}
         </CdsContentSwitcher>
-        {question.questionOptions.showDate && (
+
+        {question.questionOptions.showDate === 'true' ? (
           <div style={{ marginTop: '5px' }}>
-            <InlineDate question={question} onChange={() => {}} handler={undefined} />
+            <InlineDate
+              question={question}
+              setObsDateTime={(value) => setObsDate(value)}
+              onChange={() => {}}
+              handler={ObsSubmissionHandler}
+            />
           </div>
+        ) : (
+          ''
         )}
       </FormGroup>
     )

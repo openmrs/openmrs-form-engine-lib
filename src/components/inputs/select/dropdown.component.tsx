@@ -11,6 +11,7 @@ import { type FormFieldProps } from '../../../types';
 import FieldValueView from '../../value/view/field-value-view.component';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
 import InlineDate from '../inline-date/inline-date.component';
+import { ObsSubmissionHandler } from '../../../submission-handlers/base-handlers';
 
 import styles from './dropdown.scss';
 
@@ -22,6 +23,7 @@ const Dropdown: React.FC<FormFieldProps> = ({ question, onChange, handler, previ
   const [errors, setErrors] = useState([]);
   const isFieldRequiredError = useMemo(() => errors[0]?.errCode == fieldRequiredErrCode, [errors]);
   const [warnings, setWarnings] = useState([]);
+  const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
     if (question['submission']) {
@@ -33,7 +35,13 @@ const Dropdown: React.FC<FormFieldProps> = ({ question, onChange, handler, previ
   const handleChange = (value) => {
     setFieldValue(question.id, value);
     onChange(question.id, value, setErrors, setWarnings);
-    question.value = handler?.handleFieldSubmission(question, value, encounterContext);
+    question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, value, encounterContext)
+          : handler?.handleFieldSubmission(question, value, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
   };
 
   useEffect(() => {
@@ -41,7 +49,13 @@ const Dropdown: React.FC<FormFieldProps> = ({ question, onChange, handler, previ
       const { value } = previousValue;
       setFieldValue(question.id, value);
       onChange(question.id, value, setErrors, setWarnings);
-      question.value = handler?.handleFieldSubmission(question, value, encounterContext);
+      question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, value, encounterContext)
+          : handler?.handleFieldSubmission(question, value, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
     }
   }, [previousValue]);
 
@@ -94,11 +108,18 @@ const Dropdown: React.FC<FormFieldProps> = ({ question, onChange, handler, previ
             warn={warnings.length > 0}
             warnText={warnings.length ? warnings[0].message : ''}
           />
-          {question.questionOptions.showDate && (
+          {question.questionOptions.showDate ? (
           <div style={{ marginTop: '5px' }}>
-          <InlineDate question={question} onChange={() => {}} handler={undefined} />
-        </div>
-  )}
+            <InlineDate
+              question={question}
+              setObsDateTime={(value) => setObsDate(value)}
+              onChange={() => {}}
+              handler={ObsSubmissionHandler}
+            />
+          </div>
+          ) : (
+            ''
+          )}
         </Layer>
       </div>
     )

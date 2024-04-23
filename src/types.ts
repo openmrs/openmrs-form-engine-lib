@@ -149,6 +149,13 @@ export interface FormFieldProps {
   previousValue?: previousValue;
 }
 
+export interface InlineDateProps {
+  setObsDateTime: (value: Date) => void;
+  question: FormField;
+  onChange: () => void;
+  handler: SubmissionHandler;
+}
+
 export interface FormSection {
   hide?: HideProps;
   label: string;
@@ -210,7 +217,6 @@ export interface FormQuestionOptions {
   shownDateOptions?: {
     validators?: Array<Record<string, any>>;
   };
-  answers?: Array<Record<any, any>>;
   weeksList?: string;
   locationTag?: string;
   rows?: number;

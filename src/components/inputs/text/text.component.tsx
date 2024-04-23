@@ -12,6 +12,7 @@ import { isInlineView } from '../../../utils/form-helper';
 import FieldValueView from '../../value/view/field-value-view.component';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
 import InlineDate from '../inline-date/inline-date.component';
+import { ObsSubmissionHandler } from '../../../submission-handlers/base-handlers';
 
 import styles from './text.scss';
 
@@ -22,6 +23,7 @@ const TextField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
   const [errors, setErrors] = useState([]);
   const [warnings, setWarnings] = useState([]);
   const isFieldRequiredError = useMemo(() => errors[0]?.errCode == fieldRequiredErrCode, [errors]);
+  const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
     if (question['submission']) {
@@ -45,7 +47,13 @@ const TextField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
     }
     if (previousValue !== field.value) {
       onChange(question.id, field.value, setErrors, setWarnings);
-      question.value = handler?.handleFieldSubmission(question, field.value, encounterContext);
+      question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, field?.value, encounterContext)
+          : handler?.handleFieldSubmission(question, field?.value, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
     }
   };
 
@@ -92,10 +100,17 @@ const TextField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
             />
           </Layer>
         </div>
-        {question.questionOptions.showDate && (
+        {question.questionOptions.showDate === 'true' ? (
           <div style={{ marginTop: '5px' }}>
-            <InlineDate question={question} onChange={() => {}} handler={undefined} />
+            <InlineDate
+              question={question}
+              setObsDateTime={(value) => setObsDate(value)}
+              onChange={() => {}}
+              handler={ObsSubmissionHandler}
+            />
           </div>
+        ) : (
+          ''
         )}
       </>
     )

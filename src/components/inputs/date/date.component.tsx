@@ -13,6 +13,7 @@ import { FormContext } from '../../../form-context';
 import FieldValueView from '../../value/view/field-value-view.component';
 import RequiredFieldLabel from '../../required-field-label/required-field-label.component';
 import InlineDate from '../inline-date/inline-date.component';
+import { ObsSubmissionHandler } from '../../../submission-handlers/base-handlers';
 
 import styles from './date.scss';
 
@@ -28,6 +29,7 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
   const isFieldRequiredError = useMemo(() => errors[0]?.errCode == fieldRequiredErrCode, [errors]);
   const [previousValueForReview, setPreviousValueForReview] = useState(null);
   const [time, setTime] = useState('');
+  const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
     if (question['submission']) {
@@ -48,7 +50,13 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
     setFieldValue(question.id, refinedDate);
     onChange(question.id, refinedDate, setErrors, setWarnings);
     onTimeChange(false, true);
-    question.value = handler?.handleFieldSubmission(question, refinedDate, encounterContext);
+    question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, refinedDate, encounterContext)
+          : handler?.handleFieldSubmission(question, refinedDate, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
   };
 
   useEffect(() => {
@@ -58,7 +66,13 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
       setFieldValue(question.id, refinedDate);
       onChange(question.id, refinedDate, setErrors, setWarnings);
       onTimeChange(false, true);
-      question.value = handler?.handleFieldSubmission(question, refinedDate, encounterContext);
+      question.value =
+        obsDate === undefined
+          ? handler?.handleFieldSubmission(question, refinedDate, encounterContext)
+          : handler?.handleFieldSubmission(question, refinedDate, {
+              ...encounterContext,
+              encounterDate: obsDate !== undefined ? obsDate : undefined,
+            });
     }
   }, [previousValue]);
 
@@ -214,10 +228,17 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
             ''
           )}
         </div>
-        {question.questionOptions.showDate && (
+        {question.questionOptions.showDate === 'true' ? (
           <div style={{ marginTop: '5px' }}>
-            <InlineDate question={question} onChange={() => {}} handler={undefined} />
+            <InlineDate
+              question={question}
+              setObsDateTime={(value) => setObsDate(value)}
+              onChange={() => {}}
+              handler={ObsSubmissionHandler}
+            />
           </div>
+        ) : (
+          ''
         )}
       </>
     )
