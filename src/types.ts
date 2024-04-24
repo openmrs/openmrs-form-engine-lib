@@ -133,7 +133,6 @@ export interface previousValue {
   field: string;
   value: string | number | Date | boolean | previousValue[];
 }
-
 export interface FormFieldProps {
   question: FormField;
   onChange: (

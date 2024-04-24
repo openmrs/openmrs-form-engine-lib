@@ -19,7 +19,6 @@ const ContentSwitcher: React.FC<FormFieldProps> = ({ question, onChange, handler
   const [field, meta] = useField(question.id);
   const { setFieldValue, encounterContext, layoutType, workspaceLayout } = React.useContext(FormContext);
   const [errors, setErrors] = useState([]);
-  const [conceptName, setConceptName] = useState('Loading...');
   const [obsDate, setObsDate] = useState<Date>();
 
   useEffect(() => {
