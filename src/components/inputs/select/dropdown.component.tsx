@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Dropdown as DropdownInput, Layer } from '@carbon/react';
