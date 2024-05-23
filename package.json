@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint src --ext .ts,.tsx --fix",
     "verify": "turbo lint typescript test --concurrency=5",
+    "test-e2e": "playwright test",
     "test": "jest --config ./jest.config.js --passWithNoTests",
     "typescript": "tsc",
     "build": "webpack --mode production",
@@ -54,6 +55,7 @@
     "@carbon/react": "^1.37.0",
     "@openmrs/esm-framework": "next",
     "@openmrs/esm-patient-common-lib": "next",
+    "@playwright/test": "^1.44.0",
     "@swc/cli": "^0.1.65",
     "@swc/core": "^1.5.7",
     "@swc/jest": "^0.2.36",
@@ -73,6 +75,7 @@
     "concurrently": "^6.5.1",
     "css-loader": "^6.11.0",
     "dayjs": "^1.11.11",
+    "dotenv": "^16.3.1",
     "eslint": "^8.57.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react-hooks": "^4.6.2",

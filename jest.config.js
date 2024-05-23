@@ -10,7 +10,7 @@ module.exports = {
     },
   },
   coverageReporters: ['json-summary', 'lcov'],
-  collectCoverageFrom: ['./src/**', '!./src/components/**/*.snap'],
+  collectCoverageFrom: ['./src/**', '!./src/components/**/*.snap', '!**/e2e/**'],
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest',
   },
@@ -27,4 +27,5 @@ module.exports = {
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   testEnvironment: 'jsdom',
+  testPathIgnorePatterns: [path.resolve(__dirname, 'e2e')],
 };
