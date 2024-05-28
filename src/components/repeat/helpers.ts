@@ -5,6 +5,7 @@ import { type OpenmrsResource } from '@openmrs/esm-framework';
 import { isEmpty } from '../../validators/form-validator';
 import { clearSubmission } from '../../utils/common-utils';
 import { assignedObsIds } from '../../submission-handlers/obsHandler';
+import { assignedDiagnosisIds } from 'src/submission-handlers/encounterDiagnosisHandler';
 
 export function cloneRepeatField(srcField: FormField, value: OpenmrsResource, idSuffix: number) {
   const originalGroupMembersIds: string[] = [];
@@ -83,6 +84,7 @@ export function hydrateRepeatField(
       obs.uuid != field.meta.previousValue?.uuid &&
       !assignedObsIds.includes(obs.uuid),
   );
+  // handle orders
   const unMappedOrders = encounter.orders.filter((order) => {
     const availableOrderables = field.questionOptions.answers?.map((answer) => answer.concept) || [];
     return availableOrderables.includes(order.concept?.uuid) && !assignedOrderIds.includes(order.uuid);
@@ -93,6 +95,16 @@ export function hydrateRepeatField(
       .map((order) => {
         const clone = cloneRepeatField(field, order, counter++);
         initialValues[clone.id] = formFieldHandlers[field.type].getInitialValue({ orders: [order] }, clone, formFields);
+        return clone;
+      });
+  }
+  //handle diagnoses
+  if (field.type === 'diagnosis') {
+    return encounter.diagnoses
+      .filter((diagnosis) => !diagnosis.voided)
+      .map((diagnosis) => {
+        const clone = cloneRepeatField(field, diagnosis, counter++);
+        initialValues[clone.id] = formFieldHandlers[field.type].getInitialValue({ orders: [diagnosis] }, clone, formFields);
         return clone;
       });
   }

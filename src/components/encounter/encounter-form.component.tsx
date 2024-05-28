@@ -532,22 +532,12 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
         });
       }
       // handle encounter diagnosis
-      try {
-        const saveDiagnoses = await EncounterFormManager.saveDiagnosis(fields, savedEncounter);
-        if (saveDiagnoses) {
-          showSnackbar({
-            title: t('encounterDiagnosisSaved', 'Encounter diagnosis saved successfully'),
-            kind: 'success',
-            isLowContrast: true,
-          });
-        }
-      } catch (error) {
-        const errorMessages = extractErrorMessagesFromResponse(error);
-        return Promise.reject({
-          title: t('errorSavingEncounterDiagnosis', 'Error saving encounter diagnosis'),
-          subtitle: errorMessages.join(', '),
-          kind: 'error',
-          isLowContrast: false,
+      const saveDiagnoses = savedEncounter.diagnoses.map((diagnosis) => diagnosis.uuid);
+      if (saveDiagnoses) {
+        showSnackbar({
+          title: t('encounterDiagnosisSaved', 'Encounter diagnosis saved successfully'),
+          kind: 'success',
+          isLowContrast: true,
         });
       }
       // handle attachments

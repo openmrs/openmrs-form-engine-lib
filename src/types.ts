@@ -496,4 +496,5 @@ export interface Diagnosis {
   rank: number;
   display: string;
   voided: boolean;
+  uuid: string
 }

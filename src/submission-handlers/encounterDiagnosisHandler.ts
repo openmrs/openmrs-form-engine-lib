@@ -1,6 +1,8 @@
 import { gracefullySetSubmission } from '../utils/common-utils';
 import { type EncounterContext, type FormField, type OpenmrsEncounter, type SubmissionHandler } from '..';
 
+export let assignedDiagnosisIds: string[] = [];
+
 export const EncounterDiagnosisHandler: SubmissionHandler = {
   handleFieldSubmission: (field: FormField, value: any, context: EncounterContext) => {
     const newValue = constructNewDiagnosis(value, field, context.patient.id);
@@ -14,13 +16,8 @@ export const EncounterDiagnosisHandler: SubmissionHandler = {
     context: EncounterContext,
   ) => {
     if (encounter?.diagnoses?.length > 0) {
-      if(field.questionOptions.rank === 1) {
-        return encounter.diagnoses.find((entry) => entry.voided === false && field.questionOptions.rank === entry.rank)?.diagnosis
-        ?.coded?.uuid;
-      } else {
-        return encounter.diagnoses.find((entry) => entry.voided === false && field.questionOptions.rank !== entry.rank)?.diagnosis
-        ?.coded?.uuid;
-      }
+      assignedDiagnosisIds.push(encounter.diagnoses[0].diagnosis.coded.uuid);
+      return encounter.diagnoses[0].diagnosis.coded.uuid;
     } else {
       return;
     }
@@ -31,7 +28,7 @@ export const EncounterDiagnosisHandler: SubmissionHandler = {
   },
   getPreviousValue: (field: FormField, encounter: OpenmrsEncounter, allFormFields: Array<FormField>) => {
     return null;
-  }
+  },
 };
 
 const constructNewDiagnosis = (value: any, field: FormField, patientUuid: string) => {
@@ -48,3 +45,7 @@ const constructNewDiagnosis = (value: any, field: FormField, patientUuid: string
     rank: field.questionOptions.rank, // rank 1 denotes a diagnosis is primary, else secondary
   };
 };
+
+export function teardownTestDiagnosisHandler() {
+  assignedDiagnosisIds = [];
+}

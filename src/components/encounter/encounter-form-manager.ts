@@ -37,6 +37,7 @@ export class EncounterFormManager {
     const obsForSubmission = [];
     prepareObs(obsForSubmission, allFields);
     const ordersForSubmission = prepareOrders(allFields);
+    const diagnosesForSubmission = prepareDiagnoses(allFields);
     let encounterForSubmission: OpenmrsEncounter = {};
 
     if (encounterContext.encounter) {
@@ -64,6 +65,7 @@ export class EncounterFormManager {
       }
       encounterForSubmission.obs = obsForSubmission;
       encounterForSubmission.orders = ordersForSubmission;
+      encounterForSubmission.diagnoses = diagnosesForSubmission;
     } else {
       encounterForSubmission = {
         patient: patient.id,
@@ -82,6 +84,7 @@ export class EncounterFormManager {
         },
         visit: visit?.uuid,
         orders: ordersForSubmission,
+        diagnoses: diagnosesForSubmission,
       };
     }
     return encounterForSubmission;
@@ -158,19 +161,6 @@ export class EncounterFormManager {
     const ac = new AbortController();
     return Promise.all(patientPrograms.map((programPayload) => saveProgramEnrollment(programPayload, ac)));
   };
-
-  static saveDiagnosis = (fields: FormField[], encounter: OpenmrsEncounter) => {
-    const diagnoses = fields?.filter((field) => field.type === 'diagnosis' && hasSubmission(field));
-    if (!diagnoses) return [];
-    const ac = new AbortController();
-    return diagnoses.map((diagnosis) => {
-      const payload = {
-        ...diagnosis.meta.submission.newValue,
-        encounter: encounter.uuid,
-      };
-      return savePatientDiagnosis(ac, payload);
-    });
-  };
 }
 
 // Helpers
@@ -246,4 +236,10 @@ function hasSubmittableObs(field: FormField) {
     return true;
   }
   return !field.isHidden && !field.isParentHidden && (type === 'obsGroup' || hasSubmission(field));
+}
+
+function prepareDiagnoses(fields: FormField[]) {
+  return fields?.filter((field) => field.type === 'diagnosis' && hasSubmission(field))
+    .flatMap((field) => [field.meta.submission.newValue, field.meta.submission.voidedValue])
+    .filter((o) => o);
 }

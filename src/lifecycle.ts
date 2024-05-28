@@ -1,4 +1,5 @@
 import setupFormEngineLibI18n from './setupI18n';
+import { teardownTestDiagnosisHandler } from './submission-handlers/encounterDiagnosisHandler';
 import { teardownObsHandler } from './submission-handlers/obsHandler';
 import { teardownTestOrderHandler } from './submission-handlers/testOrderHandler';
 
@@ -16,4 +17,5 @@ export function init() {
 export function teardown() {
   teardownTestOrderHandler();
   teardownObsHandler();
+  teardownTestDiagnosisHandler();
 }
