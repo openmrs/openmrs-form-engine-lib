@@ -8,7 +8,13 @@ import {
   type PatientProgramPayload,
 } from '../../types';
 import { type EncounterContext } from '../../form-context';
-import { saveAttachment, saveEncounter, savePatientIdentifier, saveProgramEnrollment } from '../../api/api';
+import {
+  saveAttachment,
+  saveEncounter,
+  savePatientDiagnosis,
+  savePatientIdentifier,
+  saveProgramEnrollment,
+} from '../../api/api';
 import { hasRendering, hasSubmission } from '../../utils/common-utils';
 import { voidObs, constructObs } from '../../submission-handlers/obsHandler';
 import dayjs from 'dayjs';
@@ -151,6 +157,19 @@ export class EncounterFormManager {
   static savePatientPrograms = (patientPrograms: PatientProgramPayload[]) => {
     const ac = new AbortController();
     return Promise.all(patientPrograms.map((programPayload) => saveProgramEnrollment(programPayload, ac)));
+  };
+
+  static saveDiagnosis = (fields: FormField[], encounter: OpenmrsEncounter) => {
+    const diagnoses = fields?.filter((field) => field.type === 'diagnosis' && hasSubmission(field));
+    if (!diagnoses) return [];
+    const ac = new AbortController();
+    return diagnoses.map((diagnosis) => {
+      const payload = {
+        ...diagnosis.meta.submission.newValue,
+        encounter: encounter.uuid,
+      };
+      return savePatientDiagnosis(ac, payload);
+    });
   };
 }
 

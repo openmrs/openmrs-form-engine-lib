@@ -252,6 +252,7 @@ export interface FormQuestionOptions {
   showComment?: boolean;
   comment?: string;
   shownCommentOptions?: { validators?: Array<Record<string, any>>; hide?: { hideWhenExpression: string } };
+  rank?: number;
 }
 
 export type SessionMode = 'edit' | 'enter' | 'view' | 'embedded-view';
@@ -305,6 +306,7 @@ export interface OpenmrsEncounter {
   visit?: OpenmrsResource | string;
   encounterProviders?: Array<Record<string, any>>;
   form?: OpenmrsFormResource;
+  diagnoses?: Array<Diagnosis>;
 }
 
 export interface OpenmrsObs extends OpenmrsResource {
@@ -470,4 +472,28 @@ export interface PatientProgramPayload {
     startDate?: string;
     endDate?: string;
   }>;
+}
+
+export interface DiagnosisPayload {
+  encounter: string;
+  patient: string;
+  condition: null;
+  diagnosis: {
+    coded: string;
+  };
+  certainty: string;
+  rank: number;
+}
+
+export interface Diagnosis {
+  patient: string;
+  diagnosis: {
+    coded: {
+      uuid: string;
+    };
+  };
+  certainty: string;
+  rank: number;
+  display: string;
+  voided: boolean;
 }
