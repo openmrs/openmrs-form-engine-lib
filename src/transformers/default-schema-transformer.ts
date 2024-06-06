@@ -32,6 +32,9 @@ function handleQuestion(question: FormField, form: FormSchema) {
       : { hasProgramFields: true };
     form.meta = formMeta;
   }
+  if (question.type === 'diagnosis') {
+    handleDiagnosesDataSource(question);
+  }
   try {
     sanitizeQuestion(question);
     setFieldValidators(question);
@@ -220,4 +223,13 @@ function handleQuestionsWithObsComments(sectionQuestions: Array<FormField>): Arr
   });
 
   return augmentedQuestions;
+}
+
+function handleDiagnosesDataSource(question: FormField) {
+  if ('dataSource' in question.questionOptions && question.questionOptions['dataSource'] === 'diagnoses') {
+    question.questionOptions.datasource = {
+      name: 'problem_datasource',
+    };
+    delete question.questionOptions['dataSource'];
+  }
 }

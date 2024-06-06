@@ -539,6 +539,15 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
           isLowContrast: true,
         });
       }
+      // handle encounter diagnosis
+      const saveDiagnoses = savedEncounter.diagnoses.map((diagnosis) => diagnosis.uuid);
+      if (saveDiagnoses) {
+        showSnackbar({
+          title: t('encounterDiagnosisSaved', 'Encounter diagnosis saved successfully'),
+          kind: 'success',
+          isLowContrast: true,
+        });
+      }
       // handle attachments
       try {
         const attachmentsResponse = await Promise.all(

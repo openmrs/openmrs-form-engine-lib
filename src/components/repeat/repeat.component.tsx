@@ -17,6 +17,7 @@ import { ExternalFunctionContext } from '../../external-function-context';
 const renderingByTypeMap: Record<string, RenderType> = {
   obsGroup: 'group',
   testOrder: 'select',
+  diagnosis: 'ui-select-extended',
 };
 
 const Repeat: React.FC<FormFieldProps> = ({ question, onChange, handler }) => {
