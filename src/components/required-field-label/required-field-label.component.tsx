@@ -9,12 +9,12 @@ interface RequiredFieldLabelProps {
 function RequiredFieldLabel({ label }: RequiredFieldLabelProps) {
   const { t } = useTranslation();
   return (
-    <>
+    <span>
       <span>{label}</span>
       <span title={t('required', 'Required')} className={styles.required}>
         *
       </span>
-    </>
+    </span>
   );
 }
 
