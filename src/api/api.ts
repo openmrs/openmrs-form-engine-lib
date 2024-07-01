@@ -1,10 +1,12 @@
 import { fhirBaseUrl, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { encounterRepresentation } from '../constants';
-import { type OpenmrsForm, type PatientIdentifier, type PatientProgramPayload } from '../types';
+import { type PersonAttribute, type OpenmrsForm, type PatientIdentifier, type PatientProgramPayload } from '../types';
 import { isUuid } from '../utils/boolean-utils';
 
 export function saveEncounter(abortController: AbortController, payload, encounterUuid?: string) {
-  const url = encounterUuid ? `${restBaseUrl}/encounter/${encounterUuid}?v=${encounterRepresentation}` : `${restBaseUrl}/encounter?v=${encounterRepresentation}`;
+  const url = encounterUuid
+    ? `${restBaseUrl}/encounter/${encounterUuid}?v=${encounterRepresentation}`
+    : `${restBaseUrl}/encounter?v=${encounterRepresentation}`;
 
   return openmrsFetch(url, {
     headers: {
@@ -171,5 +173,42 @@ export function savePatientIdentifier(patientIdentifier: PatientIdentifier, pati
     },
     method: 'POST',
     body: JSON.stringify(patientIdentifier),
+  });
+}
+
+export async function getPersonAttributeTypeFormat(personAttributeTypeUuid: string) {
+  let response = await openmrsFetch(
+    `${restBaseUrl}/personattributetype/${personAttributeTypeUuid}?v=custom:(format)`,
+  ).then(({ data }) => data);
+  if (response) {
+    return response;
+  }
+  return;
+}
+export async function getPatientAttribute(patientAttributeUuid: string) {
+  let response = await openmrsFetch(`${restBaseUrl}/patient/${patientAttributeUuid}?v=custom:(attributes)`).then(
+    ({ data }) => data,
+  );
+  if (response) {
+    return response;
+  }
+  return;
+}
+
+export function savePersonAttribute(personAttribute: PersonAttribute, personUuid: string) {
+  let url: string;
+
+  if (personAttribute.uuid) {
+    url = `${restBaseUrl}/person/${personUuid}/attribute/${personAttribute.uuid}`;
+  } else {
+    url = `${restBaseUrl}/person/${personUuid}/attribute`;
+  }
+
+  return openmrsFetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(personAttribute),
   });
 }
