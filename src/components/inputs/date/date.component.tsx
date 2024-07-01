@@ -14,6 +14,7 @@ import RequiredFieldLabel from '../../required-field-label/required-field-label.
 import styles from './date.scss';
 import { useFieldValidationResults } from '../../../hooks/useFieldValidationResults';
 import { OpenmrsDatePicker, formatDate, formatTime } from '@openmrs/esm-framework';
+import { type CalendarDate } from '@internationalized/date';
 
 const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, previousValue }) => {
   const { t } = useTranslation();
@@ -29,8 +30,9 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
     return false;
   }, [encounterContext.sessionMode, question.readonly, question.inlineRendering, layoutType, workspaceLayout]);
 
-  const onDateChange = ([date]) => {
-    const refinedDate = date instanceof Date ? new Date(date.setHours(0, 0, 0, 0)) : new Date(date);
+  const onDateChange = (date: CalendarDate) => {
+    const refinedDate = new Date(date.toString());
+    refinedDate.setHours(0, 0, 0, 0);
     setTimeIfPresent(refinedDate, time);
     setFieldValue(question.id, refinedDate);
     onChange(question.id, refinedDate, setErrors, setWarnings);
@@ -97,7 +99,7 @@ const DateField: React.FC<FormFieldProps> = ({ question, onChange, handler, prev
               <Layer>
                 <OpenmrsDatePicker
                   id={question.id}
-                  onChange={(date) => onDateChange([date])}
+                  onChange={onDateChange}
                   labelText={
                     question.isRequired ? (
                       <RequiredFieldLabel label={t(question.label)} />
