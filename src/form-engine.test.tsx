@@ -36,6 +36,7 @@ import requiredTestForm from '__mocks__/forms/rfe-forms/required-form.json';
 import conditionalRequiredTestForm from '__mocks__/forms/rfe-forms/conditional-required-form.json';
 import conditionalAnsweredForm from '__mocks__/forms/rfe-forms/conditional-answered-form.json';
 import FormEngine from './form-engine.component';
+import { OpenmrsDatePicker as realOpenmrsDatePicker } from './datepicker';
 
 const patientUUID = '8673ee4f-e2ab-4077-ba55-4980f408773e';
 const visit = mockVisit;
@@ -54,27 +55,12 @@ jest.mock('@openmrs/esm-framework', () => {
 
   return {
     ...originalModule,
-    createErrorHandler: jest.fn(),
-    showNotification: jest.fn(),
-    showToast: jest.fn(),
     getAsyncLifecycle: jest.fn(),
     usePatient: jest.fn().mockImplementation(() => ({ patient: mockPatient })),
     registerExtension: jest.fn(),
     useSession: jest.fn().mockImplementation(() => mockSessionDataResponse.data),
     openmrsFetch: jest.fn().mockImplementation((args) => mockOpenmrsFetch(args)),
-    OpenmrsDatePicker: jest.fn().mockImplementation(({ id, labelText, value, onChange, isInvalid, invalidText }) => {
-      return (
-        <>
-          <label htmlFor={id}>{labelText}</label>
-          <input
-            id={id}
-            value={value ? dayjs(value).format('DD/MM/YYYY') : undefined}
-            onChange={(evt) => onChange(parseDate(dayjs(evt.target.value).format('YYYY-MM-DD')))}
-          />
-          {isInvalid && invalidText && <span>{invalidText}</span>}
-        </>
-      );
-    }),
+    OpenmrsDatePicker: jest.fn(),
   };
 });
 
@@ -95,6 +81,9 @@ jest.mock('./hooks/useRestMaxResultsCount', () => jest.fn().mockReturnValue({ sy
 
 describe('Form engine component', () => {
   const user = userEvent.setup();
+  beforeEach(() => {
+    OpenmrsDatePicker = jest.fn();
+  });
 
   afterEach(() => {
     jest.useRealTimers();
