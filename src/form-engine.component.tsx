@@ -115,19 +115,12 @@ const FormEngine: React.FC<FormProps> = ({
   const { isFormExpanded, hideFormCollapseToggle } = useFormCollapse(sessionMode);
 
   const showSidebar = useMemo(() => {
-    return workspaceLayout !== 'minimized' && scrollablePages.size > 1 && sessionMode !== 'embedded-view';
-  }, [workspaceLayout, scrollablePages.size, sessionMode]);
+    return sessionMode !== 'embedded-view';
+  }, [sessionMode]);
 
   const showPatientBanner = useMemo(() => {
     return workspaceLayout != 'minimized' && patient?.id && sessionMode != 'embedded-view';
   }, [patient?.id, sessionMode, workspaceLayout]);
-
-  const showButtonSet = useMemo(() => {
-    if (sessionMode === 'embedded-view') {
-      return false;
-    }
-    return workspaceLayout === 'minimized' || (workspaceLayout === 'maximized' && scrollablePages.size <= 1);
-  }, [sessionMode, workspaceLayout, scrollablePages]);
 
   useEffect(() => {
     ////////////
@@ -323,26 +316,6 @@ const FormEngine: React.FC<FormProps> = ({
                           <div>{fieldErrors.length > 0 ? <ErrorModal errors={fieldErrors} /> : null}</div>{' '}
                         </div>
                       </div>
-                      {showButtonSet && (
-                        <ButtonSet className={styles.minifiedButtons}>
-                          <Button
-                            kind="secondary"
-                            onClick={() => {
-                              onCancel && onCancel();
-                              handleClose && handleClose();
-                              hideFormCollapseToggle();
-                            }}>
-                            {mode === 'view' ? t('close', 'Close') : t('cancel', 'Cancel')}
-                          </Button>
-                          <Button type="submit" disabled={isLoadingFormDependencies || mode === 'view' || isSubmitting}>
-                            {isSubmitting ? (
-                              <InlineLoading description={t('submitting', 'Submitting') + '...'} />
-                            ) : (
-                              <span>{`${t('save', 'Save')}`}</span>
-                            )}
-                          </Button>
-                        </ButtonSet>
-                      )}
                     </div>
                   </div>
                 </div>
