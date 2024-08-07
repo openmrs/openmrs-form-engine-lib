@@ -1,6 +1,6 @@
 import { fhirBaseUrl, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { encounterRepresentation } from '../constants';
-import { type OpenmrsForm, type PatientIdentifier, type PatientProgramPayload } from '../types';
+import type { PersonAttribute, OpenmrsForm, PatientIdentifier, PatientProgramPayload } from '../types';
 import { isUuid } from '../utils/boolean-utils';
 
 export function saveEncounter(abortController: AbortController, payload, encounterUuid?: string) {
@@ -131,6 +131,24 @@ export async function fetchClobData(form: OpenmrsForm): Promise<any | null> {
 
   return clobDataResponse;
 }
+export async function getPersonAttributeTypeFormat(personAttributeTypeUuid: string) {
+  try {
+    const response = await openmrsFetch(
+      `${restBaseUrl}/personattributetype/${personAttributeTypeUuid}?v=custom:(format)`,
+    );
+    if (!response) {
+      throw new Error('openmrsFetch did not return a response');
+    }
+    const { data } = response;
+    if (!data || !data.results) {
+      throw new Error('Response data is invalid');
+    }
+    return data.results;
+  } catch (error) {
+    console.error('Error fetching person attribute type format:', error);
+    return null;
+  }
+}
 
 // Program Enrollment
 export function getPatientEnrolledPrograms(patientUuid: string) {
@@ -174,5 +192,23 @@ export function savePatientIdentifier(patientIdentifier: PatientIdentifier, pati
     },
     method: 'POST',
     body: JSON.stringify(patientIdentifier),
+  });
+}
+
+export function savePersonAttribute(personAttribute: PersonAttribute, personUuid: string) {
+  let url: string;
+
+  if (personAttribute.uuid) {
+    url = `${restBaseUrl}/person/${personUuid}/attribute/${personAttribute.uuid}`;
+  } else {
+    url = `${restBaseUrl}/person/${personUuid}/attribute`;
+  }
+
+  return openmrsFetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(personAttribute),
   });
 }

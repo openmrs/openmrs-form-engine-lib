@@ -39,6 +39,7 @@ import { useTranslation } from 'react-i18next';
 import { EncounterFormManager } from './encounter-form-manager';
 import { extractErrorMessagesFromResponse } from '../../utils/error-utils';
 import { usePatientPrograms } from '../../hooks/usePatientPrograms';
+import { usePersonAttributes } from '../../hooks/usePersonAttributes';
 
 interface EncounterFormProps {
   formJson: FormSchema;
@@ -103,6 +104,7 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
   const [invalidFields, setInvalidFields] = useState([]);
   const [initValues, setInitValues] = useState({});
   const { isLoading: isLoadingPatientPrograms, patientPrograms } = usePatientPrograms(patient?.id, formJson);
+  const { isLoading: isLoadingPersonAttributes, personAttributes } = usePersonAttributes(patient?.id, formJson);
   const getFormField = useCallback((id: string) => fields.find((field) => field.id === id), [fields]);
 
   const layoutType = useLayoutType();
@@ -120,6 +122,7 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
       visit: visit,
       initValues: initValues,
       patientPrograms,
+      personAttributes,
       setEncounterDate,
       setEncounterProvider,
       setEncounterLocation,
@@ -129,7 +132,12 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
     return {
       encounterContext: contextObject,
       isLoadingContextDependencies:
-        isLoadingEncounter || isLoadingPreviousEncounter || isLoadingPatientPrograms || isLoadingEncounterRole,
+        isLoadingEncounter ||
+        isLoadingPreviousEncounter ||
+        isLoadingPatientPrograms ||
+        isLoadingPersonAttributes ||
+        isLoadingEncounterRole ||
+        isLoadingPersonAttributes,
     };
   }, [
     encounter,
@@ -139,6 +147,7 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
     sessionMode,
     initValues,
     patientPrograms,
+    personAttributes,
     isLoadingPatientPrograms,
     isLoadingPreviousEncounter,
     isLoadingEncounter,
@@ -482,6 +491,8 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
   const handleFormSubmit = async (values: Record<string, any>) => {
     const abortController = new AbortController();
     const patientIdentifiers = EncounterFormManager.preparePatientIdentifiers(fields, encounterLocation);
+    const personAttributes = EncounterFormManager.preparePersonAttributes(fields, encounterLocation);
+
     const encounter = EncounterFormManager.prepareEncounter(
       fields,
       { ...encounterContext, encounterProvider, encounterRole, location: encounterLocation },
@@ -503,6 +514,25 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
       const errorMessages = extractErrorMessagesFromResponse(error);
       return Promise.reject({
         title: t('errorSavingPatientIdentifiers', 'Error saving patient identifiers'),
+        subtitle: errorMessages.join(', '),
+        kind: 'error',
+        isLowContrast: false,
+      });
+    }
+
+    try {
+      await Promise.all(EncounterFormManager.savePersonAttributes(patient, personAttributes));
+      if (personAttributes?.length) {
+        showSnackbar({
+          title: t('personAttributesSaved', 'Person Attribute(s) saved successfully'),
+          kind: 'success',
+          isLowContrast: true,
+        });
+      }
+    } catch (error) {
+      const errorMessages = extractErrorMessagesFromResponse(error);
+      return Promise.reject({
+        title: t('errorSavingPersonAttributes', 'Error saving person attributes'),
         subtitle: errorMessages.join(', '),
         kind: 'error',
         isLowContrast: false,

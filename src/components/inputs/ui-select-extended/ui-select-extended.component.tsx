@@ -168,7 +168,7 @@ const UiSelectExtended: React.FC<FormFieldProps> = ({ question, handler, onChang
             itemToString={(item) => item?.display}
             selectedItem={field.value ? items.find((item) => item.uuid === field.value) : null}
             shouldFilterItem={({ item, inputValue }) => {
-              if (!inputValue) {
+              if (!inputValue || items.find((item) => item.uuid == field.value)) {
                 // Carbon's initial call at component mount
                 return true;
               }
