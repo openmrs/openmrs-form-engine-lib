@@ -67,20 +67,10 @@ export const FormFieldRenderer = ({ field, valueAdapter, repeatOptions }: FormFi
         }
       });
     }
-    if (sessionMode === 'enter' && (field.historicalExpression || context.previousDomainObjectValue)) {
+    if (field.historicalExpression || context.previousDomainObjectValue) {
       try {
         context.processor.getHistoricalValue(field, context).then((value) => {
           setHistoricalValue(value);
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    if (field.type === 'programState' && field.questionOptions.enablePreviousValue) {
-      try {
-        context.processor.getHistoricalValue(field, context).then((value) => {
-          setHistoricalValue({value: value.value, display: value.display});
         });
       } catch (error) {
         console.error(error);
