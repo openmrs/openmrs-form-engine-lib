@@ -76,6 +76,16 @@ export const FormFieldRenderer = ({ field, valueAdapter, repeatOptions }: FormFi
         console.error(error);
       }
     }
+
+    if (field.type === 'programState' && field.questionOptions.enablePreviousValue) {
+      try {
+        context.processor.getHistoricalValue(field, context).then((value) => {
+          setHistoricalValue({value: value.value, display: value.display});
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }, []);
 
   useEffect(() => {
