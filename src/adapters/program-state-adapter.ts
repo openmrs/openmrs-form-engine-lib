@@ -38,7 +38,17 @@ export const ProgramStateAdapter: FormFieldValueAdapter = {
     sourceObject: OpenmrsResource,
     context: FormProcessorContextProps,
   ): Promise<any> {
-    return null;
+    const program = context.customDependencies.patientPrograms?.find(
+      (program) => program.program.uuid === field.questionOptions.programUuid,
+    );
+    if (program?.states?.length > 0) {
+      const currentState = program.states
+        .filter((state) => !state.endDate)
+        .find((state) => state.state.programWorkflow?.uuid === field.questionOptions.workflowUuid)?.state;
+      field.meta = { ...(field.meta || {}), previousValue: currentState };
+      return Promise.resolve({ value : currentState.uuid, display: currentState.concept.display });
+    }
+    return Promise.resolve(null);
   },
   getDisplayValue: function (field: FormField, value: any) {
     if (value?.display) {

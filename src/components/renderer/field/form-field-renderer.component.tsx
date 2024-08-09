@@ -67,7 +67,7 @@ export const FormFieldRenderer = ({ field, valueAdapter, repeatOptions }: FormFi
         }
       });
     }
-    if (sessionMode === 'enter' && (field.historicalExpression || context.previousDomainObjectValue)) {
+    if (field.historicalExpression || context.previousDomainObjectValue) {
       try {
         context.processor.getHistoricalValue(field, context).then((value) => {
           setHistoricalValue(value);
